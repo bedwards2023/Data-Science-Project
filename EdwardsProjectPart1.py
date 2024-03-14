@@ -51,6 +51,8 @@ print("And from cancerPatientsDS: air pollution exposure, alcohol use, dust alle
 print("For my second question my Y is still in the dataset cancerPredictionDS.")
 print("But my x's will be symptom attributes from cancerPatientsDS: chest pain, coughing of blood, fatigue, weight loss ,shortness of breath ,wheezing ,swallowing difficulty ,clubbing of finger nails and snoring")
 print("And from lungcancerDS: Yellow fingers,Anxiety,Chronic Disease,Fatigue,Wheezing,Coughing,Shortness of Breath,Swallowing Difficulty,Chest pain")
+
+
 '''
 Combine the 3 dataframes into a single dataframe by joining on matching attributes  '''
 
@@ -67,8 +69,6 @@ lungcancerDS = lungcancerDS.rename(columns=column_name_mapping)
 
 #Im merging all my datasets on Age and Gender because it's in all three datasets.
 merged_df = pd.merge(cancerPredictionDS, cancerPatientsDS, on=['Age', 'Gender'], how='inner')
-print(merged_df)
-
 finaldf = pd.merge(merged_df,lungcancerDS, on=['Age','Gender'], how ='inner')
 print(finaldf)
 
@@ -90,3 +90,9 @@ For each non-numeric attribute displays the:
 Possible values
 value counts
 '''
+#These are my two new dataframes based on the attributes that will help answer my question. Its lifestyle vs symptoms
+lifestyledf = finaldf[['Age','Gender','Marital Status','Children','Smoker','Employed','Years Worked','Income Level','Social Media','Online Gaming','Air Pollution','Alcohol use','OccuPational Hazards','Balanced Diet','Obesity','Passive Smoker','ANXIETY','Cancer']]
+print(lifestyledf)
+
+symptomdf = finaldf[['Age','Gender','chronic Lung Disease','Chest Pain','Coughing of Blood','Fatigue','Weight Loss','Shortness of Breath','Wheezing','Swallowing Difficulty','Clubbing of Finger Nails','ANXIETY','CHRONIC DISEASE','ALLERGY ','COUGHING','CHEST PAIN','Cancer']]
+print(symptomdf)
