@@ -45,28 +45,27 @@ and which attributes are you going to select to be your "X" attributes (the attr
 Note: You must have at least 15 X attributes and some of these attributes must be strings (i.e., text input)
 '''
 print("*************************************************************************************")
-print("My y will be in the dataset cancerPredictionDS. It will be either a Yes or No if the person has lung cancer. ")
-print("I will using the following attributes from the cancerPatientsDS data frame to answer my questions: ")
-print(cancerPatientsDS.columns[4:25].tolist())
-print("As well as these attributes from the cancerPredictionDS:")
-print(cancerPredictionDS.columns[2:10].tolist())
-print("Then for my second question my Y will also be if the person has lung cancer or not, ")
-print("*************************************************************************************")
+print("For my first question, my y will be in the dataset cancerPredictionDS. It will be either a Yes or No if the person has lung cancer. ")
+print("I will using the lifestyle attributes from cancerPredictionDS: Marital Status, Children, Smoker, Employed, Years Worked,Income Level,Social Media,Online Gaming ")
+print("And from cancerPatientsDS: air pollution exposure, alcohol use, dust allergy, occupational hazards, genetic risk, chronic lung disease, balanced diet, obesity, smoking, passive smoker")
+print("For my second question my Y is still in the dataset cancerPredictionDS.")
+print("But my x's will be symptom attributes from cancerPatientsDS: chest pain, coughing of blood, fatigue, weight loss ,shortness of breath ,wheezing ,swallowing difficulty ,clubbing of finger nails and snoring")
+print("And from lungcancerDS: Yellow fingers,Anxiety,Chronic Disease,Fatigue,Wheezing,Coughing,Shortness of Breath,Swallowing Difficulty,Chest pain")
 '''
 Combine the 3 dataframes into a single dataframe by joining on matching attributes  '''
 
 #First I need to make some changes to my cancerPatientsDS because Gender is a 1 or 2 value, not a string 'Male' or 'Female' and I want to join my first two datasets on Age and Gender
 gender_mapping = {1: 'Male', 2: 'Female'}
-
 cancerPatientsDS['Gender'] = cancerPatientsDS['Gender'].replace(gender_mapping)
-print(cancerPatientsDS)
+#I had to do the same in the lungcancerDS because Gender was either 'M' or 'F'
 gender_mapping2 = {'M': 'Male', 'F': 'Female'}
 lungcancerDS['GENDER'] = lungcancerDS['GENDER'].replace(gender_mapping2)
+#And then I had to change the column names in lungcancerDS because the names were all capitilized.
 column_name_mapping = {'GENDER': 'Gender', 'AGE': 'Age'}
 lungcancerDS = lungcancerDS.rename(columns=column_name_mapping)
 
 
-
+#Im merging all my datasets on Age and Gender because it's in all three datasets.
 merged_df = pd.merge(cancerPredictionDS, cancerPatientsDS, on=['Age', 'Gender'], how='inner')
 print(merged_df)
 
