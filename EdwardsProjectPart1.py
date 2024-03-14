@@ -27,6 +27,9 @@ import openpyxl
 import scipy
 from scipy import stats
 import statistics
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 '''*********FUNCTIONS HERE****************'''
 #I used the function from the example video to print the desired values for each numeric column
@@ -53,6 +56,19 @@ def NonNumericPrint(dataframe,attribute):
     print('Possible values - ', dataframe[attribute].unique())
     print('value counts - ')
     print(dataframe[attribute].value_counts())
+
+
+def preprocess_data(dataframe):
+    rows_before = dataframe.shape[0]
+    dataframe.dropna(inplace=True)
+
+    rows_after = dataframe.shape[0]
+
+    if rows_before != rows_after:
+        print(f"{rows_before - rows_after} rows were dropped due to missing values.")
+    return dataframe
+
+
 
 file2 = r"cancer patient data sets.csv"
 file3=r"survey lung cancer.csv"
@@ -127,6 +143,17 @@ symptomdf = finaldf[['Age','Gender','chronic Lung Disease','Chest Pain','Coughin
 
 
 for column in lifestyledf.columns:
+    preprocess_data(lifestyledf)
+
+for column in symptomdf.columns:
+    preprocess_data(symptomdf)
+
+
+'''Data Wrangling & Scores and Rankings (30 points)
+
+Using the data frames created for each question above add code that replaces na or invalid values in for each attribute to the mean of the attribute or remove such row '''
+
+for column in lifestyledf.columns:
     if pd.api.types.is_numeric_dtype(lifestyledf[column]):
         print("Numeric Value")
         NumericAttributePrint(lifestyledf,column)
@@ -141,3 +168,42 @@ for column in symptomdf.columns:
     else:
         print("NonNumeric Value")
         NonNumericPrint(symptomdf,column)
+
+
+'''
+Use a function to create a range based upon an attribute in one of these dataframes
+Add an attribute to your dataframe using this function that you just created
+Create a scatter plot based upon this new attribute and another attribute in this dataframe'''
+
+#I'm going to rank their lifestyle choices to see if they're healthy or not
+# Convert 'Yes' and 'No' to 1 and 0 respectively in specified columns
+columns_to_convert = ['Smoker', 'Social Media', 'Online Gaming', 'Air Pollution',
+                      'Alcohol use', 'OccuPational Hazards', 'Balanced Diet', 'Obesity',
+                      'Passive Smoker', 'ANXIETY', 'Cancer']
+
+for column in columns_to_convert:
+    finaldf[column] = finaldf[column].map({'Yes': 1, 'No': 0})
+
+# Define columns for normalization
+columns_to_normalize = columns_to_convert + ['Age', 'Gender']  # Include 'Age' and 'Gender'
+
+# Subset the dataframe to include only the columns you want to normalize
+subset_df = finaldf[columns_to_normalize]
+
+# Perform normalization
+scaler = MinMaxScaler()
+normalized_data = scaler.fit_transform(subset_df)
+
+# Define weights for each attribute (you may adjust these based on your domain knowledge)
+weights = [0.5, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+
+# Calculate the composite score
+composite_score = pd.Series(normalized_data.dot(weights), name='Composite Score')
+
+# Define ranges or categories based on composite scores
+bins = [0, 0.3, 0.7, 1]
+labels = ['Unhealthy Lifestyle', 'Moderate Lifestyle', 'Healthy Lifestyle']
+finaldf['Lifestyle'] = pd.cut(composite_score, bins=bins, labels=labels)
+
+# Add the composite score and lifestyle category to the original dataframe
+finaldf['Composite Score'] = composite_score
