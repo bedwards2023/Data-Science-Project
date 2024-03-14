@@ -26,7 +26,7 @@ import openpyxl
 
 file2 = r"cancer patient data sets.csv"
 file3=r"lung_cancer.csv"
-
+jhkj
 '''
 For each file
 Using python, create a script that imports the data set and evaluate the central tendencies and variation of attributes. '''
