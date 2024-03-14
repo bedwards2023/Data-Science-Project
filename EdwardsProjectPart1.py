@@ -24,9 +24,39 @@ I'm using three data sets:
 import pandas as pd
 import xlrd
 import openpyxl
+import scipy
+from scipy import stats
+import statistics
+
+'''*********FUNCTIONS HERE****************'''
+#I used the function from the example video to print the desired values for each numeric column
+def NumericAttributePrint(dataframe,attribute):
+    print("**********************")
+    print(attribute)
+    print('Possible values - ', dataframe[attribute].unique())
+    print('value counts - ')
+    print(dataframe[attribute].value_counts())
+    print('Max - ', dataframe[attribute].max())
+    print('Min - ', dataframe[attribute].min())
+    print('Central Tendency')
+    print('Mean - ', dataframe[attribute].mean())
+    print('Median - ', dataframe[attribute].median())
+    print('Geometric mean - ', scipy.stats.gmean(dataframe[attribute]))
+    print('Variance Metric')
+    print('Standard Deviation - ', statistics.stdev(dataframe[attribute]))
+
+#This function will be called to print the possible values and value counts for any
+#nonnumeric column
+def NonNumericPrint(dataframe,attribute):
+    print("**********************")
+    print(attribute)
+    print('Possible values - ', dataframe[attribute].unique())
+    print('value counts - ')
+    print(dataframe[attribute].value_counts())
 
 file2 = r"cancer patient data sets.csv"
 file3=r"survey lung cancer.csv"
+
 
 '''
 For each file
@@ -75,6 +105,7 @@ print(finaldf)
 
 
 '''
+CENTRAL TENDENCIES 
 Create data frames for each of the questions that only include the attributes that you identified above to match the attribute(s) you are looking to predict (y value) and the attributes that you will base your prediction upon 
 For each numeric attribute displays the: 
 Possible values
@@ -92,7 +123,21 @@ value counts
 '''
 #These are my two new dataframes based on the attributes that will help answer my question. Its lifestyle vs symptoms
 lifestyledf = finaldf[['Age','Gender','Marital Status','Children','Smoker','Employed','Years Worked','Income Level','Social Media','Online Gaming','Air Pollution','Alcohol use','OccuPational Hazards','Balanced Diet','Obesity','Passive Smoker','ANXIETY','Cancer']]
-print(lifestyledf)
-
 symptomdf = finaldf[['Age','Gender','chronic Lung Disease','Chest Pain','Coughing of Blood','Fatigue','Weight Loss','Shortness of Breath','Wheezing','Swallowing Difficulty','Clubbing of Finger Nails','ANXIETY','CHRONIC DISEASE','ALLERGY ','COUGHING','CHEST PAIN','Cancer']]
-print(symptomdf)
+
+
+for column in lifestyledf.columns:
+    if pd.api.types.is_numeric_dtype(lifestyledf[column]):
+        print("Numeric Value")
+        NumericAttributePrint(lifestyledf,column)
+    else:
+        print("NonNumeric Value")
+        NonNumericPrint(lifestyledf,column)
+
+for column in symptomdf.columns:
+    if pd.api.types.is_numeric_dtype(symptomdf[column]):
+        print("Numeric Value")
+        NumericAttributePrint(symptomdf,column)
+    else:
+        print("NonNumeric Value")
+        NonNumericPrint(symptomdf,column)
