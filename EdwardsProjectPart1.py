@@ -31,6 +31,10 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+import string
+import contractions
+import re
+from collections import Counter
 
 
 '''*********FUNCTIONS HERE****************'''
@@ -82,12 +86,20 @@ def calculate_lifestyle_score(row):
 def assign_lifestyle_rank(score):
     if score <= 8:
         return 'Very Healthy'
-    elif score <= 25:
-        return 'Unhealthy'
-    elif score <= 28:
-        return 'Moderate'
-    else:
+    elif score > 8 and score <= 16 :
         return 'Healthy'
+    elif score > 16 and score <= 24:
+        return 'Moderate'
+    elif score > 24:
+        return 'Unhealthy'
+
+def tokenization(text):
+    tokens = text.split()
+    return tokens
+def remove_punctuation(text):
+    punctuationfree="".join([i for i in text if i not in string.punctuation])
+    return punctuationfree
+
 
 file2 = r"cancer patient data sets.csv"
 file3=r"survey lung cancer.csv"
@@ -162,17 +174,6 @@ symptomdf = finaldf[['Age','Gender','chronic Lung Disease','Chest Pain','Coughin
 
 
 for column in lifestyledf.columns:
-    preprocess_data(lifestyledf)
-
-for column in symptomdf.columns:
-    preprocess_data(symptomdf)
-
-
-'''Data Wrangling & Scores and Rankings (30 points)
-
-Using the data frames created for each question above add code that replaces na or invalid values in for each attribute to the mean of the attribute or remove such row '''
-
-for column in lifestyledf.columns:
     if pd.api.types.is_numeric_dtype(lifestyledf[column]):
         print("Numeric Value")
         NumericAttributePrint(lifestyledf,column)
@@ -187,6 +188,17 @@ for column in symptomdf.columns:
     else:
         print("NonNumeric Value")
         NonNumericPrint(symptomdf,column)
+
+'''Data Wrangling & Scores and Rankings (30 points)
+
+Using the data frames created for each question above add code that replaces na or invalid values in for each attribute to the mean of the attribute or remove such row '''
+
+for column in lifestyledf.columns:
+    preprocess_data(lifestyledf)
+
+for column in symptomdf.columns:
+    preprocess_data(symptomdf)
+
 
 
 '''
@@ -218,22 +230,62 @@ print(lifestyledf)
 
 '''
 Create a scatter plot based upon this new attribute and another attribute in this dataframe'''
+# Create two separate DataFrames for individuals with and without cancer
+df_with_cancer = lifestyledf[lifestyledf['Cancer'] == 'Yes']
+df_without_cancer = lifestyledf[lifestyledf['Cancer'] == 'No']
 
-rank_colors = {
-    'Very Unhealthy': 'red',
-    'Unhealthy': 'orange',
-    'Moderate': 'blue',
-    'Healthy': 'green'
-}
-
-plt.figure(figsize=(10, 6))
-for rank, color in rank_colors.items():
-    subset = lifestyledf[lifestyledf['Lifestyle Rank'] == rank]
-    plt.scatter(subset['Age'], subset['Lifestyle Score'], color=color, label=rank)
-
+# Create a scatter plot
+plt.figure(figsize=(8, 6))
+plt.scatter(df_with_cancer['Age'], df_with_cancer['Lifestyle Score'], color='red', label='With Cancer', alpha=0.5)
+plt.scatter(df_without_cancer['Age'], df_without_cancer['Lifestyle Score'], color='blue', label='Without Cancer', alpha=0.5)
+plt.title('Scatter Plot of Lifestyle Score vs Age with Cancer')
 plt.xlabel('Age')
 plt.ylabel('Lifestyle Score')
-plt.title('Age vs Lifestyle Score')
 plt.legend()
-
 plt.show()
+
+
+'''Text Attributes (30 points)
+
+Compute and display the 20 most common text in one of the text based attributes
+Parse the data frame based upon the text based attribute containing some common text 
+Write python script that counts the number of entries that contain some common text by another attribute in the dataframe of your choosing
+Use matplotlib to generate python script that displays a graph of this data'''
+
+#For this part I consulted with Dr.Works and she said I could use another data set because my datasets used above dont work with this.
+
+#I'll be using a movie review data set from kaggle https://www.kaggle.com/datasets/nltkdata/movie-review?select=movie_review.csv
+
+
+file4 = r'movie_review.csv'
+moviereviewdf = pd.read_csv(file4)
+
+#clean the data first
+moviereviewdf['clean_text']= moviereviewdf['text'].apply(lambda x: x.lower())
+moviereviewdf['clean_text']= moviereviewdf['clean_text'].apply(lambda x:remove_punctuation(x))
+moviereviewdf['clean_text']= moviereviewdf['clean_text'].apply(lambda x: re.sub('\w*\d\w*','', x))
+moviereviewdf['clean_text']= moviereviewdf['clean_text'].apply(lambda x: contractions.fix(x))
+
+textdf = moviereviewdf['clean_text']
+p = Counter(" ".join(textdf).split()).most_common(20)
+rslt = pd.DataFrame(p, columns=['Word', 'Frequency'])
+
+#Compute and display the 20 most common text in one of the text based attributes
+print(rslt)
+
+common_word = rslt.iloc[0]['Word']
+
+filtered_df = moviereviewdf[moviereviewdf['clean_text'].str.contains(common_word)]
+#Write python script that counts the number of entries that contain some common text by another attribute in the dataframe of your choosing
+word_counts_by_sentiment = filtered_df.groupby('tag').size()
+
+#Use matplotlib to generate python script that displays a graph of this data
+#So I'm showing the the sentiment of the where the common words appeared in the reviews
+plt.bar(word_counts_by_sentiment.index, word_counts_by_sentiment.values)
+plt.xlabel('Sentiment')
+plt.ylabel('Frequency of Common Word')
+plt.title(f'Frequency of "{common_word}" by Sentiment')
+plt.show()
+
+
+
