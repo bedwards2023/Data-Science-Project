@@ -287,5 +287,83 @@ plt.ylabel('Frequency of Common Word')
 plt.title(f'Frequency of "{common_word}" by Sentiment')
 plt.show()
 
+'''Variance, Covariance, and Correlation (40 points)
 
+Compute and display the variance of each "X" attributes  
+Compute and display the covariance of each "X" attribute and "y" attribute in each dataset
+You must write two sentences for each covariance that describe the type of the covariance (positive, negative, or none) and what that means in terms of the two attributes. 
+Compute and display the correlation of each "X" attribute and "y" attribute in each dataset
+You must write two sentences for each correlation that describe the type of the covariance (positive, negative, or none), the degree (See https://statisticsbyjim.com/basics/correlations/) and what that means in terms of the two attributes.'''
 
+#Compute and display the variance of each "X" attributes
+print(lifestyledf.var(numeric_only=True))
+print(symptomdf.var(numeric_only=True))
+
+#Compute and display the covariance of each "X" attribute and "y" attribute in each dataset
+
+#So first I have to do some housekeeping with my first lifestyle data frame. There are some string columns I need to change to numeric values,
+#So I'm going to make a copy of the dataframe and change the strings to numeric values.
+cancermapping = {'Yes': 1, 'No': 2}
+covariance_lifestyledf = lifestyledf
+covariance_lifestyledf['Cancer'] = covariance_lifestyledf['Cancer'].replace(cancermapping)
+covariance_lifestyledf['Employed'] = covariance_lifestyledf['Employed'].replace(cancermapping)
+covariance_lifestyledf['Smoker'] = covariance_lifestyledf['Smoker'].replace(cancermapping)
+covariance_lifestyledf['Online Gaming'] = covariance_lifestyledf['Online Gaming'].replace(cancermapping)
+covariance_lifestyledf['Social Media'] = covariance_lifestyledf['Social Media'].replace(cancermapping)
+cov_matrix = covariance_lifestyledf.cov(numeric_only=True)
+expanded_output = cov_matrix.to_string()
+print("Covariance of the lifestyle dataframe ")
+print("****************Lifestyle covariance******************")
+print(expanded_output)
+'''For context the cancer patient data sets which mainly make up my x's are various lifestyle factors that have a rating 1-8 or 1-7."
+"I interperted the data as, 1 is the highest rating. So if Air Pollution is rated 1 then its the worst and the higher ratings, 8 or 7 would"
+"be the least Air Pollution."
+"Also, some of my attributes are binary as well. When the covariance of two binary attributes are positive that means x=1 and y=1."
+"From my research when you're looking at the covariance of a continuous value and a binary value, when the covariance is positive that means as the continious"
+"value increase y=1 and when the covariance is negative, as the continious value grows y=0."
+"Age:  -0.755709 Negative. So this is saying as the Age variable increases the rate of y=1 decreases. There might be an age that a person reaches where their"
+"chances of developing lung cancer decreases."
+"Children: 0.005849 Positive. This is a really small number. The relationship between children and cancer rates are really weak so having kids wont give you lung cancer."
+"Smoker:  0.018622 Positive. Smoker was a binary attribute in my data set. So when Smoker =1 so does Cancer. This makes sense because we're looking at lung cancer."
+"Employed:  0.047881 Positive. This is a binary value as well and positive, so when employed =1 so does cancer. This is a really small number though so I wouldn't use this lifestyle attribute."
+"Years Worked: -1.446028 Negative. This was the highest covariance out of all of them, surprisingly. So when the number of years worked increases the rate of cancer =1 decreases. I guess this ties into age."
+"Social Media: 0.046588 Positive. This was one of the rating attributes, so when social media increases that's actually saying their social media usage is lower. So a rating around 7-8 would mean cancer =1."
+"It could be implied that when social media usage is lower, the rate of cancer=1, however the covariance is too small to be reliable."
+"Online Gaming: -0.078541 Negative. As online rates increase, so they get to ranking 7-8, then cancer=0. So this is implying that lower online gaming means lower lung cancer rates."
+"Air Pollution: -0.104843 Negative. When someone ranked their air pollution as 1 then cancer rates increases.  This makes sense based on common knowledge of lung cancer."
+"Alcohol use:  -0.199225 Negative. So if someone ranked their alcohol use as 1-3 then the rate of cancer =1 increases. This is the second highest covariance, so there is something to be said about"
+"alcohol use and lung cancer."
+"OccuPational Hazards: -0.170237 Negative. People rating their occupational hazards as 1-3 appear to have more rates of lung cancer. They could be more exposed to smoke and pollutants so that makes sense."
+"Balanced Diet: -0.089079 Negative. This one doesnt make a ton of sense. A person ranking their diet as 1 would have more cancer=1, however the covariance is small so I guess it doesnt matter."
+"Obesity: -0.095557 Negative. Someone rating their obesity as 1-3 would have more cancer =1. Not a very strong relationship."
+"Passive Smoker:  -0.094979 Negative. Not sure what a passive smoker is from the description, but when someone is ranked as 1-3 they have more cancer =1"
+"ANXIETY: -0.026633 Negative. Not a very strong relationship."
+"Lifestyle Score:-0.575762 Negative This was my scoring of their overall lifestyle health. The relationship is strong but this is implying that someone"
+"with a poor lifestyle score would have less chances of lung cancer.'''
+
+covariance_symptomdf = symptomdf
+covariance_symptomdf['Cancer'] = covariance_symptomdf['Cancer'].replace(cancermapping)
+cov_matrix = covariance_symptomdf.cov(numeric_only=True)
+expanded_output = cov_matrix.to_string()
+print("Covariance of the Symptom Dataframe ")
+print(expanded_output)
+
+'''Again for this the attributes are mainly rankings, where 1= the worst/most and the lower rankings means less.
+Age:  -0.755709 Negative. As age increase the rates of cancer =1 decreases. 
+chronic Lung Disease: -0.097766 Negative. Someone rating their chronic lung disease as 1 would have more cancer =1.
+Chest Pain:  -0.113134 Negative. This was the biggest covariance from the list, implying a strong relationship. Someone rating their 
+chest pain as 1 would have more cancer=1
+Coughing of Blood:   -0.073318 Negative. Not a terribly strong relationship but would imply rating =1 equals more cancer =1
+Fatigue:  -0.054619 Negative. Not a very strong relationship between a rating 1 Fatigue and lung cancer.
+Weight Loss:  -0.029699 Negative. Stronger relationship than others. 
+Shortness of Breath: -0.085684 Negative. Someone rating their shortness of breath to be a 1
+would have more lung cancer rates. 
+Wheezing:  -0.039455 Negative. Stronger relationship than other symptoms. This could be a useful symptom to use.
+Swallowing Difficulty: 0.022651 Positive. Someone rating their swallowing difficulty would actually have cancer=0 due to it being positive. 
+Clubbing of Finger Nails: -0.092374 Negative. Clubbing of finernails is actually used as a indicator of lung disease but it doesnt seem as strong as other symptoms 
+ANXIETY:  -0.026633 Negative. People rating their anxiety high could have more rates of lung cancer. They could be smoking due to their anxiety.
+CHRONIC DISEASE:  0.007942 Positive. Very small number, not a strong relationship. 
+ALLERGY:   0.010062 Positive. Also a very small number, not a strong relationship.
+COUGHING:  0.013037 Positive. Not a strong relationship.
+CHEST PAIN:    0.002127 Positive. Even weaker relationship. 
+'''
