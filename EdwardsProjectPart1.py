@@ -30,6 +30,8 @@ import statistics
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
+
 
 '''*********FUNCTIONS HERE****************'''
 #I used the function from the example video to print the desired values for each numeric column
@@ -68,7 +70,24 @@ def preprocess_data(dataframe):
         print(f"{rows_before - rows_after} rows were dropped due to missing values.")
     return dataframe
 
+#This will calculate their lifestly health score
+def calculate_lifestyle_score(row):
+    score = 0
+    for attr, weight in attribute_weights.items():
+        if pd.notna(row[attr]) and pd.to_numeric(row[attr], errors='coerce') >= 1:
+            score += pd.to_numeric(row[attr], errors='coerce') * weight
+    return score
 
+#This will assign their lifestyle score to a rank
+def assign_lifestyle_rank(score):
+    if score <= 8:
+        return 'Very Healthy'
+    elif score <= 25:
+        return 'Unhealthy'
+    elif score <= 28:
+        return 'Moderate'
+    else:
+        return 'Healthy'
 
 file2 = r"cancer patient data sets.csv"
 file3=r"survey lung cancer.csv"
@@ -172,38 +191,49 @@ for column in symptomdf.columns:
 
 '''
 Use a function to create a range based upon an attribute in one of these dataframes
-Add an attribute to your dataframe using this function that you just created
-Create a scatter plot based upon this new attribute and another attribute in this dataframe'''
+'''
 
 #I'm going to rank their lifestyle choices to see if they're healthy or not
-# Convert 'Yes' and 'No' to 1 and 0 respectively in specified columns
-columns_to_convert = ['Smoker', 'Social Media', 'Online Gaming', 'Air Pollution',
-                      'Alcohol use', 'OccuPational Hazards', 'Balanced Diet', 'Obesity',
-                      'Passive Smoker', 'ANXIETY', 'Cancer']
 
-for column in columns_to_convert:
-    finaldf[column] = finaldf[column].map({'Yes': 1, 'No': 0})
+#I gave each attribute a weight
+attribute_weights = {
+    'Smoker': 1,
+    'Obesity': 1,
+    'Passive Smoker': 1,
+    'Alcohol use': 1,
+    'OccuPational Hazards': 1,
+    'Air Pollution': 1,
+    'Online Gaming': 1,
+    'Social Media': 1,
+    'Balanced Diet': -1
+}
 
-# Define columns for normalization
-columns_to_normalize = columns_to_convert + ['Age', 'Gender']  # Include 'Age' and 'Gender'
+'''Add an attribute to your dataframe using this function that you just created'''
+#Then I calculate the score of their lifestyle
+lifestyledf['Lifestyle Score'] = lifestyledf.apply(calculate_lifestyle_score, axis=1)
+#Then assign that score to a ranking
+lifestyledf['Lifestyle Rank'] = lifestyledf['Lifestyle Score'].apply(assign_lifestyle_rank)
 
-# Subset the dataframe to include only the columns you want to normalize
-subset_df = finaldf[columns_to_normalize]
+print(lifestyledf)
 
-# Perform normalization
-scaler = MinMaxScaler()
-normalized_data = scaler.fit_transform(subset_df)
+'''
+Create a scatter plot based upon this new attribute and another attribute in this dataframe'''
 
-# Define weights for each attribute (you may adjust these based on your domain knowledge)
-weights = [0.5, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+rank_colors = {
+    'Very Unhealthy': 'red',
+    'Unhealthy': 'orange',
+    'Moderate': 'blue',
+    'Healthy': 'green'
+}
 
-# Calculate the composite score
-composite_score = pd.Series(normalized_data.dot(weights), name='Composite Score')
+plt.figure(figsize=(10, 6))
+for rank, color in rank_colors.items():
+    subset = lifestyledf[lifestyledf['Lifestyle Rank'] == rank]
+    plt.scatter(subset['Age'], subset['Lifestyle Score'], color=color, label=rank)
 
-# Define ranges or categories based on composite scores
-bins = [0, 0.3, 0.7, 1]
-labels = ['Unhealthy Lifestyle', 'Moderate Lifestyle', 'Healthy Lifestyle']
-finaldf['Lifestyle'] = pd.cut(composite_score, bins=bins, labels=labels)
+plt.xlabel('Age')
+plt.ylabel('Lifestyle Score')
+plt.title('Age vs Lifestyle Score')
+plt.legend()
 
-# Add the composite score and lifestyle category to the original dataframe
-finaldf['Composite Score'] = composite_score
+plt.show()
