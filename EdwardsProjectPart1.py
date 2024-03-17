@@ -367,3 +367,48 @@ ALLERGY:   0.010062 Positive. Also a very small number, not a strong relationshi
 COUGHING:  0.013037 Positive. Not a strong relationship.
 CHEST PAIN:    0.002127 Positive. Even weaker relationship. 
 '''
+
+corr_matrix = covariance_lifestyledf.corr(numeric_only=True)
+expanded_output = corr_matrix.to_string()
+print("Correlation of the lifestyle dataframe ")
+print(expanded_output)
+'''
+Age: -0.262511 Negative Weak Correlation. 
+Children:0.009308 Positive very weak correlation. I wouldn't use this at all.
+Smoker:0.100084 Positive. A surprisingly weak correlation considering this is for lung cancer.
+Employed:  0.259946 Positive. Weak correlation. 
+Years Worked: -0.275405 Negative. Weak correlation but stronger than others. 
+Social Media: -0.275405 Negative. Weak Correlation. Probably wouldnt use this. 
+Online Gaming: 0.248162 Positive. Weak correlation. The strongest out of the positive correlations.
+Air Pollution: -0.423356 Negative. The strongest correlation from the dataset. This goes along with the research that was cited on kaggle.
+Alcohol use: -0.169094 Negative. Weak correlation. There was a strong covariance. 
+OccuPational Hazards: -0.182114 Negative. Weak correlation. Occupational Hazards dont mean there's smoke or pollutants/ 
+Balanced Diet: -0.198430 Negative. Weak correlation. Diet doesnt seem to effect lung cancer. 
+Obesity: -0.110802 Negative. Weak correlation. Obesity isnt a good gauge of lung cancer.
+Passive Smoker:  -0.106395 Negative. Weak correlation. Another suprising value, I thought it would be higher for lung cancer. 
+ANXIETY: -0.141524 Negative. Weak Correlation. Anxiety doesnt seem to be related to lung cancer.
+Lifestyle Score:-0.163898 Negative. Weak Correlation. I guess my lifestyle scores arent a good indicator for lung cancer.'''
+
+corr_symptomdf = symptomdf
+corr_symptomdf['Cancer'] = corr_symptomdf['Cancer'].replace(cancermapping)
+corr_matrix = corr_symptomdf.corr(numeric_only=True)
+expanded_output = corr_matrix.to_string()
+print("Correlation of the Symptom Dataframe ")
+print(expanded_output)
+'''
+Age: -0.262511 Negative.Weak Correlation. This would make sense, age doesnt equal lung cancer.
+chronic Lung Disease: -0.171812 Negative. Weak correlation. Surprising that chronic lung disease doesnt equal lung cancer. 
+Chest Pain: -0.149715 Negative, weak correlation. Chest pain isnt a good symptom to determine lung cancer.
+Coughing of Blood: -0.072167 Negative, very weak correlation. Not a good thing to cough up blood, but doesnt mean you have cancer.
+Fatigue: -0.071800 Negative, very weak correlation. Fatigue isnt a good symptom to determine cancer.
+Weight Loss: -0.034638 Negative, very weak correlation. Weight loss wouldnt be a good symptom to determine lung cancer.
+Shortness of Breath: -0.111920 Negative, weak correlation. I'm surprised this isnt higher.
+Wheezing: -0.050473 Negative, very weak correlation. Also suprised this isnt higher
+Swallowing Difficulty: 0.033699 Positive, very weak correlation. I wouldnt use this symptom to determine lung cancer.
+Clubbing of Finger Nails: -0.088123 Negative very weak correlation. Again, surprised at this because clubbed finger nails are usually a good indication of lung disease.
+ANXIETY: -0.141524 Negative weak correlation. Anxiety isnt a good symptom to determine lung cancer but its higher than other symptoms in this list.
+CHRONIC DISEASE: 0.042175 Positive very weak correlation. Chronic disease could be linked to many things not related to lung cancer.
+ALLERGY: 0.054841 Positive very weak correlation. Allergies dont equal lung cancer.
+COUGHING: 0.069284 Positive very weak correlation. Has little to do with lung cancer.
+CHEST PAIN: 0.012633 Positive very weak correlation. Surprised this isnt higher. 
+'''
