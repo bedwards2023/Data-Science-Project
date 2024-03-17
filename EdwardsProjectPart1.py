@@ -1,10 +1,11 @@
 """
 
 Name:Brittany Edwards
-Date:
+Date: 03/16/2024
 Assignment:Module 9: Project - Part 1
-Due Date:
-About this project:
+Due Date:03/17/2024
+About this project: This script will be using three data sets on Lung cancer in an attempt to answer, do lifestyle choices effect lung cancer
+and Can certain symptoms be used to find out if someone has lung cancer?
 All work below was performed by Brittany Edwards
 
 """
@@ -22,14 +23,9 @@ I'm using three data sets:
 '''
 
 import pandas as pd
-import xlrd
-import openpyxl
 import scipy
 from scipy import stats
 import statistics
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 import string
 import contractions
@@ -38,7 +34,7 @@ from collections import Counter
 
 
 '''*********FUNCTIONS HERE****************'''
-#I used the function from the example video to print the desired values for each numeric column
+#I referenced all these functions from Dr.Work's videos.
 def NumericAttributePrint(dataframe,attribute):
     print("**********************")
     print(attribute)
@@ -74,7 +70,7 @@ def preprocess_data(dataframe):
         print(f"{rows_before - rows_after} rows were dropped due to missing values.")
     return dataframe
 
-#This will calculate their lifestly health score
+#This will calculate an overall lifestyle score based on how the person answered the survey.
 def calculate_lifestyle_score(row):
     score = 0
     for attr, weight in attribute_weights.items():
@@ -412,3 +408,47 @@ ALLERGY: 0.054841 Positive very weak correlation. Allergies dont equal lung canc
 COUGHING: 0.069284 Positive very weak correlation. Has little to do with lung cancer.
 CHEST PAIN: 0.012633 Positive very weak correlation. Surprised this isnt higher. 
 '''
+
+
+'''Identify and Mitigate Outliers:  (40 points)
+
+For each of the questions:
+Create a boxplots and scatter plots based upon any two X attributes and the y attribute in the dataframe for that question
+Add Python script to locate and drop any observed outliers 
+Recreate the boxplots and scatter plots using the same attribute values in your original plots '''
+
+lifestyledf.boxplot(column="Age", by="Cancer", figsize=(10, 8))
+plt.show()
+
+x= lifestyledf['Air Pollution']
+y=lifestyledf['Cancer']
+plt.title("Scatter plot for lifestlye df with outliers")
+plt.scatter(x, y)
+
+plt.show()
+
+#Now dropping outliers for box plot, there aren't any apparent outliers in the scatterplt
+#I'm only going to drop the ages over 70, because dropping the ones under 45 really messes with the graph
+dropped_outlierlifestyledf = lifestyledf[(lifestyledf['Age'] <= 70)]
+dropped_outlierlifestyledf.boxplot(column="Age", by="Cancer", figsize=(10, 8))
+plt.show()
+
+symptomdf.boxplot(column="Clubbing of Finger Nails", by="Cancer",figsize=(10,8))
+plt.show()
+
+x = symptomdf['Clubbing of Finger Nails']
+y= symptomdf['Cancer']
+plt.title("Scatter Plot for symptom df with outliers")
+plt.scatter(x,y)
+plt.show()
+
+#And now dropping outliers
+dropped_outliersymptomdf = symptomdf[(symptomdf['Clubbing of Finger Nails'] < 9)]
+dropped_outliersymptomdf.boxplot(column="Clubbing of Finger Nails", by="Cancer",figsize=(10,8))
+plt.show()
+
+x = dropped_outliersymptomdf['Clubbing of Finger Nails']
+y= dropped_outliersymptomdf['Cancer']
+plt.title("Scatter Plot for symptom Df with no outliers")
+plt.scatter(x,y)
+plt.show()
